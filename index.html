@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>مسيّر | حلول تقنية للأعمال</title>
+  <meta name="description" content="مسيّر شريكك التقني في أنظمة إدارة علاقات العملاء، وتوجيه الاتصالات، وتكامل الأنظمة." />
+  <meta name="theme-color" content="#F6F0E6" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23F6F0E6'/%3E%3Cpath d='M32 30C26 30 26 20 20 20S14 10 8 10' stroke='%231E5B47' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='30' r='4' fill='%231E5B47'/%3E%3Ccircle cx='8' cy='10' r='4.5' fill='%23C0623A'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <script>document.documentElement.classList.add('js');</script>
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" } }
+  </script>
+  <script type="module" src="main.js"></script>
+</head>
+<body>
+
+  <!-- ============ Header ============ -->
+  <header class="site-header" id="top">
+    <div class="container nav">
+      <a href="#home" class="brand" aria-label="مسيّر - الرئيسية">
+        <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+          <path d="M32 30C26 30 26 20 20 20S14 10 8 10" />
+          <circle cx="32" cy="30" r="4" class="n1" />
+          <circle cx="20" cy="20" r="3" class="n2" />
+          <circle cx="8" cy="10" r="4.5" class="n3" />
+        </svg>
+        <span>مسيّر</span>
+      </a>
+
+      <nav class="nav-links" id="nav-links" aria-label="القائمة الرئيسية">
+        <a href="#home">الرئيسية</a>
+        <a href="#services">خدماتنا</a>
+        <a href="#process">منهجيتنا</a>
+        <a href="#about">لماذا مسيّر</a>
+        <a href="#contact">تواصل معنا</a>
+      </nav>
+
+      <a href="#contact" class="btn btn-primary btn-sm nav-cta">ابدأ مشروعك</a>
+
+      <button class="nav-toggle" id="nav-toggle" aria-label="فتح القائمة" aria-expanded="false" aria-controls="nav-links">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ Hero ============ -->
+    <section class="hero" id="home">
+      <canvas class="hero-canvas" id="hero-canvas" aria-hidden="true"></canvas>
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <span class="chip reveal"><i></i> حلول تقنية للأعمال</span>
+          <h1 class="reveal">نرسم <em>المسار الأذكى</em><br />بين أعمالك وعملائك</h1>
+          <p class="lead reveal">
+            مسيّر شريكك التقني في أنظمة إدارة علاقات العملاء، وتوجيه الاتصالات، وربط الأنظمة ببعضها،
+            لتعمل فرقك بتناغم ويصل كل عميل إلى الشخص المناسب في الوقت المناسب.
+          </p>
+          <div class="hero-actions reveal">
+            <a href="#contact" class="btn btn-primary">
+              تواصل معنا
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+            </a>
+            <a href="#services" class="btn btn-ghost">استكشف خدماتنا</a>
+          </div>
+          <ul class="hero-trust reveal">
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg> تنفيذ محلي ودعم بالعربية</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg> حلول سحابية آمنة</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg> تكامل مع أنظمتك الحالية</li>
+          </ul>
+        </div>
+      </div>
+      <a href="#services" class="scroll-hint" aria-label="انتقل إلى الخدمات"><span></span></a>
+    </section>
+
+    <!-- ============ Services ============ -->
+    <section class="section services" id="services">
+      <div class="container">
+        <header class="section-head reveal">
+          <span class="eyebrow">خدماتنا</span>
+          <h2>كل ما تحتاجه لتصل بعملائك إلى وجهتهم</h2>
+          <p>نصمم وننفذ حلولاً تقنية مترابطة تختصر الطريق على فريقك وتمنح عملاءك تجربة سلسة من أول تواصل.</p>
+        </header>
+
+        <div class="cards">
+          <article class="card reveal">
+            <span class="card-num">٠١</span>
+            <div class="card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18 14.2c2.1.6 3.5 2.6 3.5 5.8"/></svg></div>
+            <h3>أنظمة إدارة علاقات العملاء</h3>
+            <p>نطبّق ونخصص منصات CRM مثل Salesforce لتنظيم بيانات عملائك ومتابعة الفرص والمبيعات من مكان واحد.</p>
+          </article>
+
+          <article class="card reveal">
+            <span class="card-num">٠٢</span>
+            <div class="card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 5 5L14 13l5 2v3a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z"/><path d="M15 3h6v6"/><path d="M21 3l-6 6"/></svg></div>
+            <h3>توجيه المكالمات ومراكز الاتصال</h3>
+            <p>أنظمة اتصال سحابية توزّع المكالمات تلقائياً على الموظف الأنسب، مع ربط كل مكالمة بملف العميل.</p>
+          </article>
+
+          <article class="card reveal">
+            <span class="card-num">٠٣</span>
+            <div class="card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6 3 12l5 6"/><path d="M16 6l5 6-5 6"/><path d="M14 4l-4 16"/></svg></div>
+            <h3>تكامل الأنظمة وواجهات API</h3>
+            <p>نربط أنظمتك المتفرقة، من المحاسبة إلى المتجر والاتصالات، لتتبادل البيانات بسلاسة ودون إدخال يدوي.</p>
+          </article>
+
+          <article class="card reveal">
+            <span class="card-num">٠٤</span>
+            <div class="card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M9 14h6M9 17h3"/></svg></div>
+            <h3>تطوير البرمجيات المخصصة</h3>
+            <p>تطبيقات ويب ولوحات تحكم مبنية خصيصاً لسير عملك، بواجهات عربية سهلة وسريعة.</p>
+          </article>
+
+          <article class="card reveal">
+            <span class="card-num">٠٥</span>
+            <div class="card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9.5a4 4 0 0 1-.5 8.5z"/><path d="M12 12v5M9.5 14.5 12 12l2.5 2.5"/></svg></div>
+            <h3>البنية السحابية</h3>
+            <p>نصمم وننشر بنيتك على السحابة بأمان وقابلية للتوسع، مع مراقبة مستمرة وتكاليف تحت السيطرة.</p>
+          </article>
+
+          <article class="card reveal">
+            <span class="card-num">٠٦</span>
+            <div class="card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
+            <h3>التقارير ولوحات البيانات</h3>
+            <p>حوّل بياناتك إلى قرارات عبر لوحات تفاعلية تعرض أداء فرقك ومبيعاتك لحظة بلحظة.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Process ============ -->
+    <section class="section process" id="process">
+      <div class="container">
+        <header class="section-head reveal">
+          <span class="eyebrow">منهجيتنا</span>
+          <h2>مسار واضح من الفكرة إلى الإطلاق</h2>
+          <p>أربع محطات نسير فيها معك خطوة بخطوة، بمخرجات محددة في كل مرحلة.</p>
+        </header>
+
+        <ol class="steps">
+          <li class="step reveal">
+            <span class="step-dot">١</span>
+            <h3>نستمع ونحلل</h3>
+            <p>نفهم أهدافك وتحديات فريقك ونرسم خريطة الأنظمة الحالية.</p>
+          </li>
+          <li class="step reveal">
+            <span class="step-dot">٢</span>
+            <h3>نصمم المسار</h3>
+            <p>نقترح الحل الأنسب وخطة تنفيذ واضحة بمراحل ومخرجات محددة.</p>
+          </li>
+          <li class="step reveal">
+            <span class="step-dot">٣</span>
+            <h3>ننفذ ونربط</h3>
+            <p>نبني ونكامل ونختبر على بيئة تجريبية قبل الإطلاق.</p>
+          </li>
+          <li class="step reveal">
+            <span class="step-dot">٤</span>
+            <h3>نطلق وندعم</h3>
+            <p>ندرّب فريقك ونرافقك بالدعم والتحسين المستمر بعد الإطلاق.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ About / Why ============ -->
+    <section class="section about" id="about">
+      <div class="container about-grid">
+        <div class="about-copy reveal">
+          <span class="eyebrow">لماذا مسيّر؟</span>
+          <h2>التقنية الجيدة لا تُرى، بل تُسيّر كل شيء بهدوء</h2>
+          <p>
+            المُسيّر هو من يدير الأمور ويوجّهها إلى وجهتها الصحيحة. هذا ما نفعله لأعمالك:
+            نسيّر اتصالاتك وبياناتك وأنظمتك خلف الكواليس، لتتفرغ أنت وفريقك لعملائكم.
+          </p>
+          <ul class="features">
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg><div><strong>فريق محلي</strong><span>نفهم السوق السعودي واحتياجات أعمالك.</span></div></li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg><div><strong>حلول مرنة</strong><span>تبدأ بما تحتاجه اليوم وتنمو مع أعمالك.</span></div></li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg><div><strong>أمان البيانات أولاً</strong><span>معايير حماية واضحة في كل مرحلة.</span></div></li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg><div><strong>دعم مباشر</strong><span>تواصل سريع مع فريق يعرف نظامك.</span></div></li>
+          </ul>
+        </div>
+
+        <figure class="route-card reveal" aria-label="مثال: توجيه مكالمة واردة إلى الموظف المناسب">
+          <svg viewBox="0 0 420 320" class="route-svg">
+            <!-- paths: hub -> agents -->
+            <path class="route-path" d="M210 160 C150 160 150 70 90 70" />
+            <path class="route-path active" d="M210 160 L90 160" />
+            <path class="route-path" d="M210 160 C150 160 150 250 90 250" />
+            <!-- incoming -> hub -->
+            <path class="route-path active" d="M340 160 L210 160" />
+
+            <g class="node-in">
+              <circle cx="350" cy="160" r="26" />
+              <path d="M341 152h5l2 5-2.5 1.5a8 8 0 0 0 4 4L351 160l5 2v4a2 2 0 0 1-2 2 15 15 0 0 1-15-14 2 2 0 0 1 2-2z" class="ico" />
+              <text x="350" y="208">مكالمة واردة</text>
+            </g>
+
+            <g class="node-hub">
+              <circle cx="210" cy="160" r="34" class="halo" />
+              <circle cx="210" cy="160" r="24" />
+              <text x="210" y="166" class="hub-label">مسيّر</text>
+            </g>
+
+            <g class="node-agent">
+              <rect x="22" y="50" width="70" height="40" rx="12" />
+              <text x="57" y="75">المبيعات</text>
+            </g>
+            <g class="node-agent selected">
+              <rect x="22" y="140" width="70" height="40" rx="12" />
+              <text x="57" y="165">الدعم</text>
+            </g>
+            <g class="node-agent">
+              <rect x="22" y="230" width="70" height="40" rx="12" />
+              <text x="57" y="255">الحسابات</text>
+            </g>
+          </svg>
+          <figcaption>كل مكالمة تصل تلقائياً إلى الفريق الأنسب، مع ملف العميل كاملاً.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ CTA band ============ -->
+    <section class="cta-wrap">
+      <div class="container">
+        <div class="cta reveal">
+          <div>
+            <h2>جاهز لتسيّر أعمالك بذكاء؟</h2>
+            <p>احجز استشارة مع فريقنا ونقترح لك أفضل مسار لأعمالك.</p>
+          </div>
+          <a href="#contact" class="btn btn-light">
+            احجز استشارة
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Contact ============ -->
+    <section class="section contact" id="contact">
+      <div class="container contact-grid">
+        <div class="contact-info reveal">
+          <span class="eyebrow">تواصل معنا</span>
+          <h2>أخبرنا عن مشروعك</h2>
+          <p>املأ النموذج أو تواصل معنا مباشرة، وسيعود إليك أحد أعضاء فريقنا في أقرب وقت.</p>
+
+          <ul class="info-list">
+            <li>
+              <span class="info-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+              <div><small>البريد الإلكتروني</small><a href="mailto:info@musayir.sa" data-contact-email>info@musayir.sa</a></div>
+            </li>
+            <li>
+              <span class="info-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 5 5L14 13l5 2v3a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></span>
+              <div><small>الجوال</small><a href="tel:+966500000000" dir="ltr">+966 50 000 0000</a></div>
+            </li>
+            <li>
+              <span class="info-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
+              <div><small>الموقع</small><span>الرياض، المملكة العربية السعودية</span></div>
+            </li>
+          </ul>
+        </div>
+
+        <form class="contact-form reveal" id="contact-form" novalidate>
+          <div class="field-row">
+            <label class="field">
+              <span>الاسم</span>
+              <input type="text" name="name" autocomplete="name" required />
+            </label>
+            <label class="field">
+              <span>اسم الشركة <em>(اختياري)</em></span>
+              <input type="text" name="company" autocomplete="organization" />
+            </label>
+          </div>
+          <div class="field-row">
+            <label class="field">
+              <span>البريد الإلكتروني</span>
+              <input type="email" name="email" autocomplete="email" dir="ltr" required />
+            </label>
+            <label class="field">
+              <span>رقم الجوال</span>
+              <input type="tel" name="phone" autocomplete="tel" dir="ltr" placeholder="05XXXXXXXX" />
+            </label>
+          </div>
+          <label class="field">
+            <span>الخدمة المطلوبة</span>
+            <select name="service" required>
+              <option value="" selected disabled>اختر الخدمة</option>
+              <option>أنظمة إدارة علاقات العملاء</option>
+              <option>توجيه المكالمات ومراكز الاتصال</option>
+              <option>تكامل الأنظمة وواجهات API</option>
+              <option>تطوير البرمجيات المخصصة</option>
+              <option>البنية السحابية</option>
+              <option>التقارير ولوحات البيانات</option>
+              <option>أخرى</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>تفاصيل المشروع</span>
+            <textarea name="message" rows="4" required></textarea>
+          </label>
+          <button type="submit" class="btn btn-primary btn-block">
+            إرسال
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+          </button>
+          <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ Footer ============ -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="#home" class="brand">
+          <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+            <path d="M32 30C26 30 26 20 20 20S14 10 8 10" />
+            <circle cx="32" cy="30" r="4" class="n1" />
+            <circle cx="20" cy="20" r="3" class="n2" />
+            <circle cx="8" cy="10" r="4.5" class="n3" />
+          </svg>
+          <span>مسيّر</span>
+        </a>
+        <p class="footer-about">حلول تقنية تربط أعمالك بعملائك: CRM، توجيه الاتصالات، وتكامل الأنظمة.</p>
+      </div>
+      <nav aria-label="روابط سريعة">
+        <h4>روابط سريعة</h4>
+        <a href="#services">خدماتنا</a>
+        <a href="#process">منهجيتنا</a>
+        <a href="#about">لماذا مسيّر</a>
+        <a href="#contact">تواصل معنا</a>
+      </nav>
+      <div>
+        <h4>تواصل</h4>
+        <a href="mailto:info@musayir.sa" data-contact-email>info@musayir.sa</a>
+        <a href="tel:+966500000000" dir="ltr">+966 50 000 0000</a>
+        <span>الرياض، المملكة العربية السعودية</span>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© <span id="year">2026</span> مسيّر. جميع الحقوق محفوظة.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
