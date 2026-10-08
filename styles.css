@@ -38,7 +38,8 @@ body {
 }
 img, svg { display: block; }
 a { color: inherit; text-decoration: none; }
-h1, h2, h3, h4 { font-family: var(--font-head); font-weight: 700; line-height: 1.35; margin: 0; letter-spacing: 0; }
+/* Extra word spacing: Alexandria's final ر/و tails otherwise run into the next word's alef. */
+h1, h2, h3, h4 { font-family: var(--font-head); font-weight: 700; line-height: 1.35; margin: 0; letter-spacing: 0; word-spacing: .14em; }
 p { margin: 0; }
 :focus-visible { outline: 2px solid var(--terra); outline-offset: 3px; border-radius: 6px; }
 
