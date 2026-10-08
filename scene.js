@@ -6,8 +6,9 @@ import * as THREE from 'three';
 const COLORS = {
   bg: new THREE.Color('#F6F0E6'),
   node: new THREE.Color('#1E5B47'),
-  edge: new THREE.Color('#ABC4B7'),
+  edge: new THREE.Color('#B4CABE'),
   current: new THREE.Color('#C0623A'),
+  spark: new THREE.Color('#E5652A'),   // live current: a hotter, more vivid terracotta
   source: new THREE.Color('#1E5B47'),
 };
 
@@ -19,7 +20,7 @@ const ROUTES = 4;        // circuits live at once
 const TRAIL = 7;         // spark head + tail
 const FLOW = 16;         // current dots running along a powered wire
 const RING_POOL = 10;    // arrival / call flashes
-const SPEED = 4.2;       // edges per second
+const SPEED = 3.4;       // edges per second
 const HOLD = 1.4;        // seconds a completed circuit stays powered
 
 const pointVert = /* glsl */ `
@@ -183,7 +184,7 @@ export function initHeroScene(canvas) {
   const edgeGeo = new THREE.BufferGeometry();
   edgeGeo.setAttribute('position', new THREE.BufferAttribute(edgePos, 3));
   edgeGeo.setAttribute('color', new THREE.BufferAttribute(edgeCol, 3));
-  globe.add(new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.75 })));
+  globe.add(new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.85 })));
   // Per-vertex charge, so a wire can be powered part-way along its length.
   const charge = new Float32Array(edges.length * 2);
 
@@ -244,7 +245,7 @@ export function initHeroScene(canvas) {
 
   // ---- Circuits ----
   const sparks = makeCloud(ROUTES * (TRAIL + FLOW), uniforms);
-  for (let i = 0; i < ROUTES * (TRAIL + FLOW); i++) COLORS.current.toArray(sparks.color, i * 3);
+  for (let i = 0; i < ROUTES * (TRAIL + FLOW); i++) COLORS.spark.toArray(sparks.color, i * 3);
   globe.add(sparks.points);
 
   const routes = Array.from({ length: ROUTES }, (_, i) => ({ phase: 'wait', timer: i * 0.7, s: 0, path: [], links: [] }));
@@ -327,7 +328,7 @@ export function initHeroScene(canvas) {
           if (sk < 0) break;
           const f = k / TRAIL;
           pointOnPath(route, sk, tmp).toArray(sparks.pos, (base + k) * 3);
-          sparks.size[base + k] = 12 * (1 - f * 0.6);
+          sparks.size[base + k] = 15 * (1 - f * 0.55);
           sparks.alpha[base + k] = Math.pow(1 - f, 1.5);
         }
       }
@@ -340,15 +341,15 @@ export function initHeroScene(canvas) {
         if (sd > route.s - 0.1) continue;
         const idx = base + TRAIL + k;
         pointOnPath(route, sd, tmp).toArray(sparks.pos, idx * 3);
-        sparks.size[idx] = 4.5;
-        sparks.alpha[idx] = 0.8 * fade;
+        sparks.size[idx] = 5.5;
+        sparks.alpha[idx] = fade;
       }
     });
     sparks.flush();
 
     for (let e = 0; e < edges.length; e++) {
-      edgeTint.copy(COLORS.edge).lerp(COLORS.current, charge[e * 2]).toArray(edgeCol, e * 6);
-      edgeTint.copy(COLORS.edge).lerp(COLORS.current, charge[e * 2 + 1]).toArray(edgeCol, e * 6 + 3);
+      edgeTint.copy(COLORS.edge).lerp(COLORS.spark, charge[e * 2]).toArray(edgeCol, e * 6);
+      edgeTint.copy(COLORS.edge).lerp(COLORS.spark, charge[e * 2 + 1]).toArray(edgeCol, e * 6 + 3);
     }
     edgeGeo.attributes.color.needsUpdate = true;
 
