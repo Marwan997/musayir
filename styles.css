@@ -242,6 +242,7 @@ p { margin: 0; }
 .cta::after { content: ""; position: absolute; width: 380px; height: 380px; border-radius: 50%; left: -120px; top: -160px; background: radial-gradient(circle, rgba(192, 98, 58, .45), transparent 65%); pointer-events: none; }
 .cta > * { position: relative; z-index: 1; }
 .cta h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); }
+.cta-brand { color: var(--terra-soft); }
 .cta p { opacity: .82; margin-top: .4rem; }
 
 /* ---------- Contact ---------- */
