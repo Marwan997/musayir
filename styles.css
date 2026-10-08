@@ -21,7 +21,10 @@
   --font-body: "IBM Plex Sans Arabic", system-ui, sans-serif;
   --ease: cubic-bezier(.2, .7, .2, 1);
 
-  --pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23C0623A' stroke-opacity='.09' stroke-width='1'%3E%3Crect x='22' y='22' width='28' height='28'/%3E%3Crect x='22' y='22' width='28' height='28' transform='rotate(45 36 36)'/%3E%3Ccircle cx='36' cy='36' r='6'/%3E%3Cpath d='M0 36h12M60 36h12M36 0v12M36 60v12'/%3E%3C/g%3E%3C/svg%3E");
+  /* Sadu-inspired tiles (generated on a woven pixel grid, see assets/). */
+  --pattern: url("assets/sadu-circuit.svg");
+  --pattern-on-green: url("assets/sadu-circuit-on-green.svg");
+  --sadu-band: url("assets/sadu-band.svg");
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -153,7 +156,7 @@ p { margin: 0; }
 
 /* ---------- Services ---------- */
 .services { background: var(--bg-2); }
-.services::before { content: ""; position: absolute; inset: 0; background-image: var(--pattern); opacity: .9; pointer-events: none; }
+.services::before { content: ""; position: absolute; inset: 0; background-image: var(--pattern); pointer-events: none; }
 .services .container { position: relative; }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(310px, 100%), 1fr)); gap: 20px; }
 .card {
@@ -238,7 +241,7 @@ p { margin: 0; }
 }
 .cta::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23F6F0E6' stroke-opacity='.08' stroke-width='1'%3E%3Crect x='22' y='22' width='28' height='28'/%3E%3Crect x='22' y='22' width='28' height='28' transform='rotate(45 36 36)'/%3E%3Ccircle cx='36' cy='36' r='6'/%3E%3Cpath d='M0 36h12M60 36h12M36 0v12M36 60v12'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: var(--pattern-on-green);
 }
 .cta::after { content: ""; position: absolute; width: 380px; height: 380px; border-radius: 50%; left: -120px; top: -160px; background: radial-gradient(circle, rgba(192, 98, 58, .45), transparent 65%); pointer-events: none; }
 .cta > * { position: relative; z-index: 1; }
@@ -286,7 +289,8 @@ p { margin: 0; }
 
 /* ---------- Footer ---------- */
 .site-footer { border-top: 1px solid var(--line); background: var(--bg-2); position: relative; }
-.site-footer::before { content: ""; position: absolute; inset: 0; background-image: var(--pattern); opacity: .7; pointer-events: none; }
+/* Woven Sadu band along the top edge of the footer. */
+.site-footer::before { content: ""; display: block; height: 76px; background: var(--sadu-band) repeat-x center; border-bottom: 1px solid var(--line); }
 .footer-grid { position: relative; display: grid; grid-template-columns: 2fr 1fr 1.2fr; gap: 40px; padding-block: 56px 36px; }
 .footer-about { color: var(--ink-2); margin-top: .8rem; max-width: 340px; font-size: .95rem; }
 .footer-grid h4 { font-size: 1rem; margin-bottom: .8rem; }
