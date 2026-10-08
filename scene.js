@@ -1,19 +1,26 @@
-// Hero scene: a "network globe" of connected nodes. Terracotta pulses travel
-// node-to-node along the edges (مسيّر — routing things to where they belong), warming each edge they cross.
+// Hero scene: a network globe wired like a circuit. A call enters at a node (green ring),
+// current runs along the shortest wire path to one endpoint (terracotta), the endpoint
+// lights up, and the circuit fades. مسيّر: routing each call to where it belongs.
 import * as THREE from 'three';
 
 const COLORS = {
   bg: new THREE.Color('#F6F0E6'),
   node: new THREE.Color('#1E5B47'),
-  edge: new THREE.Color('#9DB8AA'),
-  pulse: new THREE.Color('#C0623A'),
+  edge: new THREE.Color('#ABC4B7'),
+  current: new THREE.Color('#C0623A'),
+  source: new THREE.Color('#1E5B47'),
 };
 
 const NODE_COUNT = 150;
 const RADIUS = 2.4;
 const NEIGHBORS = 3;
-const PULSES = 26;
-const TRAIL = 6;
+
+const ROUTES = 4;        // circuits live at once
+const TRAIL = 7;         // spark head + tail
+const FLOW = 16;         // current dots running along a powered wire
+const RING_POOL = 10;    // arrival / call flashes
+const SPEED = 4.2;       // edges per second
+const HOLD = 1.4;        // seconds a completed circuit stays powered
 
 const pointVert = /* glsl */ `
   uniform float uPixelRatio;
@@ -33,7 +40,7 @@ const pointVert = /* glsl */ `
   }
 `;
 
-const pointFrag = /* glsl */ `
+const dotFrag = /* glsl */ `
   varying vec3 vColor;
   varying float vAlpha;
   void main() {
@@ -46,14 +53,42 @@ const pointFrag = /* glsl */ `
   }
 `;
 
-function makePointMaterial(uniforms) {
+const ringFrag = /* glsl */ `
+  varying vec3 vColor;
+  varying float vAlpha;
+  void main() {
+    float d = length(gl_PointCoord - 0.5);
+    float a = smoothstep(0.07, 0.0, abs(d - 0.42)) * vAlpha;
+    if (a < 0.01) discard;
+    gl_FragColor = vec4(vColor, a);
+  }
+`;
+
+function makePointMaterial(uniforms, fragmentShader = dotFrag) {
   return new THREE.ShaderMaterial({
     uniforms,
     vertexShader: pointVert,
-    fragmentShader: pointFrag,
+    fragmentShader,
     transparent: true,
     depthWrite: false,
   });
+}
+
+// Points cloud whose per-point position/size/alpha/colour we rewrite each frame.
+function makeCloud(count, uniforms, fragmentShader) {
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(count * 3), 3));
+  geo.setAttribute('aSize', new THREE.BufferAttribute(new Float32Array(count), 1));
+  geo.setAttribute('aAlpha', new THREE.BufferAttribute(new Float32Array(count), 1));
+  geo.setAttribute('aColor', new THREE.BufferAttribute(new Float32Array(count * 3), 3));
+  const points = new THREE.Points(geo, makePointMaterial(uniforms, fragmentShader));
+  points.frustumCulled = false;
+  const a = geo.attributes;
+  return {
+    points,
+    pos: a.position.array, size: a.aSize.array, alpha: a.aAlpha.array, color: a.aColor.array,
+    flush() { a.position.needsUpdate = a.aSize.needsUpdate = a.aAlpha.needsUpdate = a.aColor.needsUpdate = true; },
+  };
 }
 
 // Small deterministic PRNG so the layout is identical on every visit.
@@ -86,6 +121,7 @@ export function initHeroScene(canvas) {
 
   const uniforms = { uPixelRatio: { value: pixelRatio }, uScale: { value: 1 } };
   const rand = seeded(7);
+  const pick = (arr) => arr[Math.floor(rand() * arr.length)];
 
   // ---- Nodes (Fibonacci sphere with a little jitter) ----
   const nodes = [];
@@ -98,19 +134,24 @@ export function initHeroScene(canvas) {
     nodes.push(new THREE.Vector3(Math.cos(th) * r * j, y * j, Math.sin(th) * r * j));
   }
 
+  // Endpoints ("hubs") are where circuits terminate.
+  const isHub = new Uint8Array(NODE_COUNT);
+  const hubs = [];
   const nodeGeo = new THREE.BufferGeometry().setFromPoints(nodes);
+  const baseSize = new Float32Array(NODE_COUNT);
   const nSize = new Float32Array(NODE_COUNT);
-  const nAlpha = new Float32Array(NODE_COUNT).fill(1);
   const nColor = new Float32Array(NODE_COUNT * 3);
   for (let i = 0; i < NODE_COUNT; i++) {
-    const hub = rand() < 0.1;
-    nSize[i] = hub ? 13 : 6 + rand() * 2.5;
-    (hub ? COLORS.pulse : COLORS.node).toArray(nColor, i * 3);
+    isHub[i] = rand() < 0.1 ? 1 : 0;
+    if (isHub[i]) hubs.push(i);
+    baseSize[i] = nSize[i] = isHub[i] ? 12 : 6 + rand() * 2.5;
+    (isHub[i] ? COLORS.current : COLORS.node).toArray(nColor, i * 3);
   }
   nodeGeo.setAttribute('aSize', new THREE.BufferAttribute(nSize, 1));
-  nodeGeo.setAttribute('aAlpha', new THREE.BufferAttribute(nAlpha, 1));
+  nodeGeo.setAttribute('aAlpha', new THREE.BufferAttribute(new Float32Array(NODE_COUNT).fill(1), 1));
   nodeGeo.setAttribute('aColor', new THREE.BufferAttribute(nColor, 3));
   globe.add(new THREE.Points(nodeGeo, makePointMaterial(uniforms)));
+  const bump = new Float32Array(NODE_COUNT);   // endpoint "lit" amount, decays
 
   // ---- Edges (k nearest neighbours, deduplicated) ----
   const edges = [];
@@ -127,7 +168,7 @@ export function initHeroScene(canvas) {
         if (seen.has(key)) return;
         seen.add(key);
         const e = edges.length;
-        edges.push([i, j, p.distanceTo(nodes[j])]);
+        edges.push([i, j]);
         adjacency[i].push({ to: j, e });
         adjacency[j].push({ to: i, e });
       });
@@ -142,100 +183,189 @@ export function initHeroScene(canvas) {
   const edgeGeo = new THREE.BufferGeometry();
   edgeGeo.setAttribute('position', new THREE.BufferAttribute(edgePos, 3));
   edgeGeo.setAttribute('color', new THREE.BufferAttribute(edgeCol, 3));
-  globe.add(new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.6 })));
-  const heat = new Float32Array(edges.length);
+  globe.add(new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.75 })));
+  // Per-vertex charge, so a wire can be powered part-way along its length.
+  const charge = new Float32Array(edges.length * 2);
+
+  // Shortest-path field toward every endpoint (BFS): next[i] is the neighbour one hop closer.
+  const fields = new Map(hubs.map((target) => {
+    const dist = new Int16Array(NODE_COUNT).fill(-1);
+    const next = new Int16Array(NODE_COUNT).fill(-1);
+    dist[target] = 0;
+    const queue = [target];
+    for (let h = 0; h < queue.length; h++) {
+      const u = queue[h];
+      for (const { to } of adjacency[u]) {
+        if (dist[to] < 0) { dist[to] = dist[u] + 1; next[to] = u; queue.push(to); }
+      }
+    }
+    return [target, { dist, next }];
+  }));
 
   // ---- Orbit rings with a satellite each ----
-  const rings = [
+  const orbits = [
     { r: 3.25, tiltX: 1.2, tiltY: 0.3, speed: 0.22 },
     { r: 3.6, tiltX: 1.75, tiltY: -0.6, speed: -0.15 },
   ].map((cfg) => {
     const pts = new THREE.EllipseCurve(0, 0, cfg.r, cfg.r).getPoints(160).map((p) => new THREE.Vector3(p.x, p.y, 0));
-    const ring = new THREE.LineLoop(
+    const line = new THREE.LineLoop(
       new THREE.BufferGeometry().setFromPoints(pts),
-      new THREE.LineBasicMaterial({ color: COLORS.pulse, transparent: true, opacity: 0.22 })
+      new THREE.LineBasicMaterial({ color: COLORS.current, transparent: true, opacity: 0.2 })
     );
     const holder = new THREE.Group();
     holder.rotation.set(cfg.tiltX, cfg.tiltY, 0);
-    holder.add(ring);
+    holder.add(line);
     world.add(holder);
     return { ...cfg, holder };
   });
-  const satGeo = new THREE.BufferGeometry();
-  satGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(rings.length * 3), 3));
-  satGeo.setAttribute('aSize', new THREE.BufferAttribute(new Float32Array(rings.length).fill(11), 1));
-  satGeo.setAttribute('aAlpha', new THREE.BufferAttribute(new Float32Array(rings.length).fill(1), 1));
-  const satCol = new Float32Array(rings.length * 3);
-  rings.forEach((_, i) => COLORS.pulse.toArray(satCol, i * 3));
-  satGeo.setAttribute('aColor', new THREE.BufferAttribute(satCol, 3));
-  world.add(new THREE.Points(satGeo, makePointMaterial(uniforms)));
+  const sats = makeCloud(orbits.length, uniforms);
+  orbits.forEach((_, i) => { sats.size[i] = 10; sats.alpha[i] = 1; COLORS.current.toArray(sats.color, i * 3); });
+  world.add(sats.points);
   const satLocal = new THREE.Vector3();
 
-  // ---- Pulses travelling along the network ----
-  const pulses = Array.from({ length: PULSES }, () => {
-    const e = Math.floor(rand() * edges.length);
-    const [a, b] = edges[e];
-    return { prev: a, a, b, e, t: rand(), speed: 0.7 + rand() * 0.7 };
+  // ---- Rings: a static one marking each endpoint + a pool of flashes ----
+  const rings = makeCloud(hubs.length + RING_POOL, uniforms, ringFrag);
+  hubs.forEach((h, i) => {
+    nodes[h].toArray(rings.pos, i * 3);
+    rings.size[i] = 24;
+    rings.alpha[i] = 0.35;
+    COLORS.current.toArray(rings.color, i * 3);
   });
-  const P = PULSES * TRAIL;
-  const pulsePos = new Float32Array(P * 3);
-  const pulseSize = new Float32Array(P);
-  const pulseAlpha = new Float32Array(P);
-  const pulseCol = new Float32Array(P * 3);
-  for (let i = 0; i < PULSES; i++) {
-    for (let k = 0; k < TRAIL; k++) {
-      const idx = i * TRAIL + k;
-      const f = k / TRAIL;
-      pulseSize[idx] = 10 * (1 - f * 0.6);
-      pulseAlpha[idx] = Math.pow(1 - f, 1.6);
-      COLORS.pulse.toArray(pulseCol, idx * 3);
-    }
+  const flashes = Array.from({ length: RING_POOL }, (_, i) => ({ slot: hubs.length + i, t: 1 }));
+  globe.add(rings.points);
+
+  function flash(node, color, scale = 1) {
+    const f = flashes.reduce((a, b) => (b.t > a.t ? b : a));   // free or oldest
+    f.t = 0;
+    f.scale = scale;
+    nodes[node].toArray(rings.pos, f.slot * 3);
+    color.toArray(rings.color, f.slot * 3);
   }
-  const pulseGeo = new THREE.BufferGeometry();
-  pulseGeo.setAttribute('position', new THREE.BufferAttribute(pulsePos, 3));
-  pulseGeo.setAttribute('aSize', new THREE.BufferAttribute(pulseSize, 1));
-  pulseGeo.setAttribute('aAlpha', new THREE.BufferAttribute(pulseAlpha, 1));
-  pulseGeo.setAttribute('aColor', new THREE.BufferAttribute(pulseCol, 3));
-  globe.add(new THREE.Points(pulseGeo, makePointMaterial(uniforms)));
+
+  // ---- Circuits ----
+  const sparks = makeCloud(ROUTES * (TRAIL + FLOW), uniforms);
+  for (let i = 0; i < ROUTES * (TRAIL + FLOW); i++) COLORS.current.toArray(sparks.color, i * 3);
+  globe.add(sparks.points);
+
+  const routes = Array.from({ length: ROUTES }, (_, i) => ({ phase: 'wait', timer: i * 0.7, s: 0, path: [], links: [] }));
+
+  function spawn(route) {
+    const target = pick(hubs);
+    const { dist, next } = fields.get(target);
+    let sources = [];
+    for (let i = 0; i < NODE_COUNT; i++) if (!isHub[i] && dist[i] >= 5 && dist[i] <= 10) sources.push(i);
+    if (!sources.length) for (let i = 0; i < NODE_COUNT; i++) if (!isHub[i] && dist[i] >= 2) sources.push(i);
+    const path = [pick(sources)];
+    while (path[path.length - 1] !== target) path.push(next[path[path.length - 1]]);
+    route.path = path;
+    route.links = path.slice(1).map((v, j) => {
+      const { e } = adjacency[path[j]].find((o) => o.to === v);
+      return { e, forward: edges[e][0] === path[j] };
+    });
+    route.s = 0;
+    route.phase = 'travel';
+    flash(path[0], COLORS.source, 0.8);
+  }
 
   const tmp = new THREE.Vector3();
-  const edgeTint = new THREE.Color();
-
-  function stepPulses(dt) {
-    for (const p of pulses) {
-      p.t += (dt * p.speed) / edges[p.e][2];
-      if (p.t >= 1) {
-        const options = adjacency[p.b].filter((o) => o.to !== p.a);
-        const next = (options.length ? options : adjacency[p.b])[Math.floor(rand() * (options.length || adjacency[p.b].length))];
-        p.prev = p.a;
-        p.a = p.b;
-        p.b = next.to;
-        p.e = next.e;
-        p.t = 0;
-      }
-      heat[p.e] = 1;
-    }
-    for (let i = 0; i < PULSES; i++) {
-      const p = pulses[i];
-      for (let k = 0; k < TRAIL; k++) {
-        const tk = p.t - k * 0.08;
-        if (tk >= 0) tmp.lerpVectors(nodes[p.a], nodes[p.b], tk);
-        else tmp.lerpVectors(nodes[p.prev], nodes[p.a], 1 + tk);
-        tmp.toArray(pulsePos, (i * TRAIL + k) * 3);
-      }
-    }
-    pulseGeo.attributes.position.needsUpdate = true;
+  function pointOnPath(route, s, out) {
+    const last = route.path.length - 1;
+    const i = Math.min(Math.floor(s), last - 1);
+    return out.lerpVectors(nodes[route.path[i]], nodes[route.path[i + 1]], THREE.MathUtils.clamp(s - i, 0, 1));
   }
 
-  function stepEdges(dt) {
-    const decay = Math.exp(-dt * 1.8);
+  const edgeTint = new THREE.Color();
+  let elapsed = 0;
+
+  function stepCircuits(dt) {
+    const decay = Math.exp(-dt * 1.6);
+    for (let v = 0; v < charge.length; v++) charge[v] *= decay;
+
+    routes.forEach((route, r) => {
+      const base = r * (TRAIL + FLOW);
+      for (let k = 0; k < TRAIL + FLOW; k++) sparks.alpha[base + k] = 0;
+
+      if (route.phase === 'wait') {
+        route.timer -= dt;
+        if (route.timer > 0) return;
+        spawn(route);
+      }
+
+      const last = route.path.length - 1;
+      if (route.phase === 'travel') {
+        route.s += dt * SPEED;
+        if (route.s >= last) {
+          route.s = last;
+          route.phase = 'hold';
+          route.timer = HOLD;
+          const end = route.path[last];
+          bump[end] = 1;
+          flash(end, COLORS.current, 1.3);
+        }
+      } else if (route.phase === 'hold') {
+        route.timer -= dt;
+        if (route.timer <= 0) {
+          route.phase = 'wait';
+          route.timer = 0.3 + rand() * 1.2;
+          return;   // stop powering; the wires fade out through `decay`
+        }
+      }
+
+      // Power the wire up to the current position.
+      for (let j = 0; j < route.links.length && j < route.s; j++) {
+        const { e, forward } = route.links[j];
+        const from = e * 2 + (forward ? 0 : 1);
+        const to = e * 2 + (forward ? 1 : 0);
+        charge[from] = 1;
+        charge[to] = Math.max(charge[to], THREE.MathUtils.clamp(route.s - j, 0, 1));
+      }
+
+      // Spark head with a tail (only while travelling).
+      if (route.phase === 'travel') {
+        for (let k = 0; k < TRAIL; k++) {
+          const sk = route.s - k * 0.13;
+          if (sk < 0) break;
+          const f = k / TRAIL;
+          pointOnPath(route, sk, tmp).toArray(sparks.pos, (base + k) * 3);
+          sparks.size[base + k] = 12 * (1 - f * 0.6);
+          sparks.alpha[base + k] = Math.pow(1 - f, 1.5);
+        }
+      }
+
+      // Current dots flowing along the powered part, toward the endpoint.
+      const fade = route.phase === 'hold' ? Math.min(1, route.timer / 0.5) : 1;
+      const spacing = last / FLOW;
+      for (let k = 0; k < FLOW; k++) {
+        const sd = (k * spacing + elapsed * 1.6) % last;
+        if (sd > route.s - 0.1) continue;
+        const idx = base + TRAIL + k;
+        pointOnPath(route, sd, tmp).toArray(sparks.pos, idx * 3);
+        sparks.size[idx] = 4.5;
+        sparks.alpha[idx] = 0.8 * fade;
+      }
+    });
+    sparks.flush();
+
     for (let e = 0; e < edges.length; e++) {
-      heat[e] *= decay;
-      edgeTint.copy(COLORS.edge).lerp(COLORS.pulse, heat[e]);
-      edgeTint.toArray(edgeCol, e * 6);
-      edgeTint.toArray(edgeCol, e * 6 + 3);
+      edgeTint.copy(COLORS.edge).lerp(COLORS.current, charge[e * 2]).toArray(edgeCol, e * 6);
+      edgeTint.copy(COLORS.edge).lerp(COLORS.current, charge[e * 2 + 1]).toArray(edgeCol, e * 6 + 3);
     }
     edgeGeo.attributes.color.needsUpdate = true;
+
+    // Endpoint flashes: expand and fade.
+    for (const f of flashes) {
+      f.t = Math.min(1, f.t + dt / 1.1);
+      const ease = 1 - Math.pow(1 - f.t, 3);
+      rings.size[f.slot] = (14 + ease * 48) * (f.scale || 1);
+      rings.alpha[f.slot] = f.t >= 1 ? 0 : Math.pow(1 - f.t, 1.3);
+    }
+    hubs.forEach((h, i) => {
+      bump[h] *= Math.exp(-dt * 1.8);
+      nSize[h] = baseSize[h] * (1 + bump[h] * 0.9);
+      rings.alpha[i] = 0.35 + bump[h] * 0.5;
+    });
+    rings.flush();
+    nodeGeo.attributes.aSize.needsUpdate = true;
   }
 
   // ---- Layout ----
@@ -271,7 +401,6 @@ export function initHeroScene(canvas) {
     mouse.ty = (e.clientY / window.innerHeight) * 2 - 1;
   }, { passive: true });
 
-  let elapsed = 0;
   function render(dt) {
     elapsed += dt;
     mouse.x += (mouse.tx - mouse.x) * Math.min(1, dt * 2.5);
@@ -284,15 +413,14 @@ export function initHeroScene(canvas) {
     world.rotation.y = mouse.x * 0.28;
     globe.rotation.y += dt * 0.07;
 
-    rings.forEach((ring, i) => {
-      const a = elapsed * ring.speed + i * 2;
-      satLocal.set(Math.cos(a) * ring.r, Math.sin(a) * ring.r, 0).applyEuler(ring.holder.rotation);
-      satLocal.toArray(satGeo.attributes.position.array, i * 3);
+    orbits.forEach((orbit, i) => {
+      const a = elapsed * orbit.speed + i * 2;
+      satLocal.set(Math.cos(a) * orbit.r, Math.sin(a) * orbit.r, 0).applyEuler(orbit.holder.rotation);
+      satLocal.toArray(sats.pos, i * 3);
     });
-    satGeo.attributes.position.needsUpdate = true;
+    sats.flush();
 
-    stepPulses(dt);
-    stepEdges(dt);
+    stepCircuits(dt);
     renderer.render(scene, camera);
   }
 
@@ -320,8 +448,8 @@ export function initHeroScene(canvas) {
   new ResizeObserver(resize).observe(canvas);
 
   resize();
-  // Pre-warm so pulses and warmed edges are already spread out on the first frame.
-  for (let i = 0; i < 90; i++) { stepPulses(1 / 30); stepEdges(1 / 30); }
+  // Pre-warm so a few circuits are already mid-flight on the first frame.
+  for (let i = 0; i < 75; i++) { elapsed += 1 / 30; stepCircuits(1 / 30); }
   render(0);
   requestAnimationFrame(() => canvas.classList.add('ready'));
   start();

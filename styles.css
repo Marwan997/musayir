@@ -213,7 +213,8 @@ p { margin: 0; }
 .route-svg { width: 100%; height: auto; position: relative; font-family: var(--font-head); }
 .route-path { fill: none; stroke: var(--line); stroke-width: 2.5; stroke-linecap: round; }
 .route-path.active { stroke: var(--terra); stroke-dasharray: 6 10; animation: flow 1.2s linear infinite; }
-@keyframes flow { to { stroke-dashoffset: 16; } }
+/* Negative offset moves the dashes toward each path's end: incoming call → مسيّر → team. */
+@keyframes flow { to { stroke-dashoffset: -16; } }
 .node-in circle { fill: var(--bg-2); stroke: var(--line); stroke-width: 1.5; }
 .node-in .ico { fill: none; stroke: var(--green); stroke-width: 1.8; stroke-linejoin: round; }
 .route-svg text { font-size: 14px; font-weight: 500; text-anchor: middle; fill: var(--ink-2); }
