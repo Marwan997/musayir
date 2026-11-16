@@ -1,7 +1,7 @@
 import { initHeroScene } from './scene.js';
 
 // Where contact-form submissions go. Replace with the real inbox.
-const CONTACT_EMAIL = 'info@musayir.sa';
+const CONTACT_EMAIL = 'info@ranna.sa';
 
 // ---- 3D hero ----
 const canvas = document.getElementById('hero-canvas');
