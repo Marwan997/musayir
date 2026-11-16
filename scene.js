@@ -1,6 +1,6 @@
 // Hero scene: a network globe wired like a circuit. A call enters at a node (green ring),
 // current runs along the shortest wire path to one endpoint (terracotta), the endpoint
-// lights up, and the circuit fades. مسيّر: routing each call to where it belongs.
+// lights up, and the circuit fades. رنّة: routing each call to where it belongs.
 import * as THREE from 'three';
 
 const COLORS = {
