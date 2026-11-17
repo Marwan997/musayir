@@ -10,16 +10,16 @@
   // ---------- Language ----------
   var META = {
     ar: {
-      title: 'رنّة · Ranna | كل مكالمة ترن عند صاحبها',
-      description: 'رنّة نظام اتصالات سحابي للشركات السعودية: ترحيب عربي، توجيه كل متصل لجوال الموظف أو هاتف مكتبه، موسيقى انتظار، بريد صوتي، تقييم بعد المكالمة، ولوحات تقارير حيّة. مستضاف في جدة.',
+      title: 'رنّة · Ranna | عميلك يتصل، والشخص الصح يرد',
+      description: 'رنّة تخلّي كل مكالمة توصل للشخص الصح: ترحيب يليق بشركتك، فريقك يرد من جواله أو مكتبه، ولا مكالمة تضيع، وتعرف رأي عميلك بعد كل اتصال.',
       menuOpen: 'فتح القائمة', menuClose: 'إغلاق القائمة', pause: 'إيقاف مؤقت', play: 'تشغيل',
       invalid: 'يرجى تعبئة الحقول المطلوبة بشكل صحيح.',
       sent: 'جهّزنا رسالتك في تطبيق البريد. اضغط إرسال هناك، أو راسلنا مباشرة على ' + CONTACT_EMAIL,
       subject: 'طلب عرض تجريبي', labels: ['الاسم', 'الشركة', 'البريد', 'الجوال', 'عدد الموظفين']
     },
     en: {
-      title: 'Ranna · رنّة | Every call rings the right person',
-      description: 'Ranna is cloud calling for Saudi businesses: an Arabic greeting, routing to each agent\'s mobile or desk phone, hold music, voicemail, post-call ratings and live dashboards. Hosted in Jeddah.',
+      title: 'Ranna · رنّة | Your customer calls. The right person answers.',
+      description: 'Ranna gets every call to the right person: a proper welcome, your team answering on mobile or desk, no lost callers, and customer feedback after every call.',
       menuOpen: 'Open menu', menuClose: 'Close menu', pause: 'Pause', play: 'Play',
       invalid: 'Please fill in the required fields correctly.',
       sent: 'Your message is ready in your email app. Press send there, or email us directly at ' + CONTACT_EMAIL,
