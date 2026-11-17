@@ -10,7 +10,7 @@
   // ---------- Language ----------
   var META = {
     ar: {
-      title: 'رنّة · Ranna | عميلك يتصل، وترنّ الهاتف الصح',
+      title: 'رنّة · Ranna | ترنّ الهاتف الصح',
       description: 'رنّة تخلّي كل مكالمة توصل للشخص الصح: ترحيب يليق بشركتك، فريقك يرد من جواله أو مكتبه، ولا مكالمة تضيع، وتعرف رأي عميلك بعد كل اتصال.',
       menuOpen: 'فتح القائمة', menuClose: 'إغلاق القائمة', pause: 'إيقاف مؤقت', play: 'تشغيل',
       invalid: 'يرجى تعبئة الحقول المطلوبة بشكل صحيح.',
@@ -18,7 +18,7 @@
       subject: 'طلب عرض تجريبي', labels: ['الاسم', 'الشركة', 'البريد', 'الجوال', 'عدد الموظفين']
     },
     en: {
-      title: 'Ranna · رنّة | Your customer calls. The right phone rings.',
+      title: 'Ranna · رنّة | Rings the right phone',
       description: 'Ranna gets every call to the right person: a proper welcome, your team answering on mobile or desk, no lost callers, and customer feedback after every call.',
       menuOpen: 'Open menu', menuClose: 'Close menu', pause: 'Pause', play: 'Play',
       invalid: 'Please fill in the required fields correctly.',
