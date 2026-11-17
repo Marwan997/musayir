@@ -300,6 +300,15 @@ html[dir="rtl"] .map::before, html[dir="rtl"] .map::after { animation-direction:
 .mini-stars { color: var(--lime); font-size: 22px; letter-spacing: 3px; margin-top: 6px; }
 .mini-stars span { color: var(--ink-3); }
 
+.extras { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 28px; }
+.extras p { color: var(--mute); font-size: 15px; }
+.extras ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; flex-wrap: wrap; }
+.extras li { border: 1px dashed #3A3C33; border-radius: 999px; padding: 6px 14px; font-size: 14px; color: var(--text-2); }
+.extras li::before { content: "+"; color: var(--lime); margin-inline-end: 6px; font-weight: 700; }
+.s-hold { gap: 14px; }
+.hold-card.busy { opacity: .55; }
+.hold-card.busy .note { background: var(--ink-3); color: var(--red); }
+
 /* ---------- Reports ---------- */
 .reports-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: 64px; align-items: center; }
 .reports .section-head { margin-bottom: 0; }
