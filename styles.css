@@ -12,6 +12,7 @@
   --chalk: #F4F4EF;
   --text-2: #BDBEB3;
   --mute: #8F9186;
+  --red: #FF4D4D;
 
   --ar: "IBM Plex Sans Arabic", "IBM Plex Sans", "Segoe UI", Tahoma, sans-serif;
   --en: "IBM Plex Sans", "IBM Plex Sans Arabic", "Segoe UI", system-ui, sans-serif;
@@ -145,7 +146,9 @@ html[lang="en"] .hero h1 { letter-spacing: -0.03em; line-height: 1.06; }
 
 .console { background: var(--ink-2); border: 1px solid var(--line); border-radius: 24px; padding: 20px; box-shadow: 0 50px 90px -40px #000, 0 0 0 1px #ffffff05 inset; }
 .console-bar { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--mute); padding-bottom: 14px; border-bottom: 1px solid var(--line); }
-.live { color: var(--lime); font: 600 12px var(--en); letter-spacing: .08em; }
+.live { display: inline-flex; align-items: center; gap: 7px; direction: ltr; color: var(--red); font: 600 12px/1 var(--en); letter-spacing: .08em; }
+.live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 3px #FF4D4D33; animation: blink 1.4s ease-in-out infinite; }
+@keyframes blink { 50% { opacity: .35; } }
 .caller { display: flex; align-items: center; gap: 14px; padding-block: 18px; }
 .avatar { width: 46px; height: 46px; border-radius: 14px; background: var(--ink-3); display: grid; place-items: center; font-weight: 700; color: var(--lime); flex: none; }
 .caller b { display: block; font-size: 16px; }
